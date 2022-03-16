@@ -6,8 +6,11 @@ Create a connection info (Admin > Connection Info) in CloudBolt That is labeled 
 
 Documentation and further examples for extending CloudBolt can be found below:
 https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/advanced-option-returns
+
 https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/resources-for-writing-plug-ins
+
 https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/plug-in-parameterization
+
 https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/plug-in-examples
 
 And from the Django documentation:
