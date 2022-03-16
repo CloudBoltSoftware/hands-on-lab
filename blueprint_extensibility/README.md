@@ -5,16 +5,13 @@ This is a very basic example of how you could leverage Connection Infos in Cloud
 Create a connection info (Admin > Connection Info) in CloudBolt That is labeled with "aci"
 
 Documentation and further examples for extending CloudBolt can be found below:
-https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/advanced-option-returns
+- https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/advanced-option-returns
+- https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/resources-for-writing-plug-ins
+- https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/plug-in-parameterization
+- https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/plug-in-examples
 
-https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/resources-for-writing-plug-ins
-
-https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/plug-in-parameterization
-
-https://docs.cloudbolt.io/articles/#!cloudbolt-latest-docs/plug-in-examples
-
-And from the Django documentation:
-https://docs.djangoproject.com/en/4.0/ref/models/querysets/
+From the Django documentation:
+- https://docs.djangoproject.com/en/4.0/ref/models/querysets/
 
 ### This Blueprint shows how to:
 1. Pass a variable (aci) in to a CloudBolt Plugin
