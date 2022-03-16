@@ -14,19 +14,16 @@ From the Django documentation:
 - https://docs.djangoproject.com/en/4.0/ref/models/querysets/
 
 ### This Blueprint shows how to:
-1. Pass a variable (aci) in to a CloudBolt Plugin
-2. Use generated options to create a dropdown list of Connection Infos labeled
-   "aci"
-3. Use the run method as the insertion point to this plugin in a CloudBolt
-   Blueprint
-4. Gather URL, username and password from a Connection Info
-5. Show how to do something, and write parameters back to the created resource
-6. These parameters can then be used to delete the things that were created
-   from the blueprint
-7. Delete the created resource using the ID and Connection Info ID stored during provisioning. 
+- Pass a variable (aci) in to a CloudBolt Plugin
+- Use generated options to create a dropdown list of Connection Infos labeled "aci"
+- Use the run method as the insertion point to this plugin in a CloudBolt Blueprint
+- Gather URL, username and password from a Connection Info
+- Show how to do something, and write parameters back to the created resource
+- These parameters can then be used to delete the things that were created from the blueprint
+- Delete the created resource using the ID and Connection Info ID stored during provisioning. 
 
 ### To import the Blueprint in to a CloudBolt instance:
-- Download the aci_sample.zip file
-- Navigate to the *Catalog* tab
-- Select *Upload Blueprint*
-- Upload the aci_sample.zip file
+1. Download the aci_sample.zip file
+2. Navigate to the *Catalog* tab
+3. Select *Upload Blueprint*
+4. Upload the aci_sample.zip file
