@@ -1,0 +1,62 @@
+{
+    "any_group_can_deploy": true,
+    "auto_historical_resources": false,
+    "blueprint_image": "/static/uploads/blueprints/XaaS_Icon.png",
+    "deployment_items": [
+        {
+            "action_name": "XaaS Build",
+            "continue_on_failure": false,
+            "deploy_seq": 1,
+            "description": null,
+            "execute_in_parallel": false,
+            "id": "BDI-anvm4jkr",
+            "name": "XaaS Build",
+            "run_on_scale_up": true,
+            "show_on_order_form": true,
+            "tier_type": "plugin"
+        }
+    ],
+    "description": "",
+    "favorited": false,
+    "icon": "XaaS_Icon.png",
+    "id": "BP-a3hz2k0w",
+    "is_manageable": true,
+    "is_orderable": true,
+    "labels": [],
+    "last_updated": "2022-12-02",
+    "management_actions": [
+        {
+            "enabled": true,
+            "label": "XaaS Email"
+        }
+    ],
+    "maximum_version_required": "",
+    "minimum_version_required": "8.6",
+    "name": "XaaS Example",
+    "resource_name_template": null,
+    "resource_type": {
+        "icon": "glyphicon glyphicon-cloud",
+        "id": "RT-jhmo09ei",
+        "label": "XaaS Deployment",
+        "lifecycle": "ACTIVE",
+        "list_view_columns": [],
+        "name": "xaas_deployments",
+        "plural_label": null
+    },
+    "sequence": 0,
+    "show_recipient_field_on_order_form": false,
+    "teardown_items": [
+        {
+            "action_name": "XaaS Teardown",
+            "continue_on_failure": false,
+            "deploy_seq": -1,
+            "description": null,
+            "execute_in_parallel": false,
+            "id": "BDI-lw9wc7en",
+            "name": "XaaS Teardown",
+            "run_on_scale_up": true,
+            "show_on_order_form": true,
+            "tier_type": "teardown_plugin"
+        }
+    ]
+}
