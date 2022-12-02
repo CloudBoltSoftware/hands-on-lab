@@ -1,35 +1,30 @@
 {
-    "action_inputs": [
+    "action-inputs": [
         {
-            "allow_multiple": false,
-            "available_all_servers": false,
+            "allow-multiple": false,
+            "available-all-servers": false,
             "description": null,
-            "field_dependency_controlling_set": [],
-            "field_dependency_dependent_set": [],
-            "global_options": [],
-            "hide_if_default_value": false,
-            "id": "CF-k59yha2a",
+            "field-dependency-controlling-set": [],
+            "field-dependency-dependent-set": [],
+            "global-options": [],
+            "hide-if-default-value": false,
             "label": "Email Address",
             "name": "email_address",
             "placeholder": null,
-            "relevant_osfamilies": [],
+            "relevant-osfamilies": [],
             "required": true,
-            "show_as_attribute": false,
-            "show_on_servers": false,
+            "show-as-attribute": false,
+            "show-on-servers": false,
             "type": "STR",
-            "value_pattern_string": null
+            "value-pattern-string": null
         }
     ],
     "description": "Sample Day-2 Action for the XaaS Example Blueprint. This Day-2 action prompts the requester to enter their email address\r\nand then sends an email to that address including the Resource ID and the Connection Info ID.",
-    "id": "OHK-qspbfq4l",
-    "last_updated": "2022-12-02",
-    "max_retries": 0,
-    "maximum_version_required": "",
-    "minimum_version_required": "8.6",
+    "max-retries": 0,
     "name": "XaaS Email",
-    "resource_technologies": [],
-    "script_filename": "xaas_resource_action.py",
-    "shared": false,
-    "target_os_families": [],
+    "resource-technologies": [],
+    "script-filename": "xaas_resource_action.py",
+    "shared": "False",
+    "target-os-families": [],
     "type": "CloudBolt Plug-in"
 }
