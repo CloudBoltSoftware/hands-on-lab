@@ -140,6 +140,7 @@ def get_or_create_state_file(
     else:
         logger.info(f"Got an existing state file {state_file.module_file.name}.")
 
+    """
     logger.info(f"Changing ownership of {state_file.module_file.path} to apache:apache")
     try:
         # If we are on a system with the apache user, set that to the statefile owner
@@ -149,5 +150,5 @@ def get_or_create_state_file(
     except KeyError:
         # We do not have the apache user, so we will keep the owner as root.
         pass
-
+    """
     return state_file, created
