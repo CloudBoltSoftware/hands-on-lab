@@ -7,6 +7,11 @@ import os
 import pwd
 from typing import Dict, Tuple, Union
 
+import json
+
+import html
+
+import ast
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.template import Template, Context
@@ -15,6 +20,7 @@ from cbhooks.models import TerraformPlanHook, TerraformStateFile
 from cbhooks.services import TerraformFileService
 from common.methods import get_proxies, get_bypass_proxy_domains
 from jobs.models import Job
+from orders.models import BlueprintOrderItem
 from resources.models import Resource
 from servicecatalog.models import (
     RunTerraformPlanHookServiceItem,
@@ -38,21 +44,19 @@ TerraformServiceItemType = Union[
 
 
 def pre_provision(
-    hook: TerraformPlanHook,
-    job: Job,
-    action_inputs: dict,
-    resource: Resource,
-    service_item: TerraformServiceItemType,
-    **kwargs: dict,
+        hook: TerraformPlanHook,
+        job: Job,
+        action_inputs: dict,
+        resource: Resource,
+        service_item: TerraformServiceItemType,
+        **kwargs: dict,
 ) -> output:
     """
     `pre_provision` runs before any "constructive" Terraform subcommands, e.g.
     `init`, `plan`, and `apply`, and sets up the global, required state.
-
     Note: This function _must_ return the `output` Tuple. Any additional
         side-effects can occur during this function execution, but changing
         the return type will cause Terraform execution to break.
-
     Args:
         hook (TerraformPlanHook): The "Terraform Plan" Action that's called from
             a Blueprint.
@@ -64,11 +68,17 @@ def pre_provision(
         service_item (RunTerraformPlanHookServiceItem): The Blueprint item
             associated with this "Terraform Plan" Action.
     """
+    # job.set_progress(f"action_inputs: {action_inputs}")
+    # job.set_progress(f"service_item: {service_item.__dict__}")
+    # job.set_progress(f"kwargs: {kwargs}")
+
     # Set progress on the Job page.
-    job.set_progress(f"Running pre-provision for Terraform Plan {service_item.name}")
+    job.set_progress(
+        f"Running pre-provision for Terraform Plan {service_item.name}")
 
     # Get or create a state file. Creation will start an empty one.
-    state_file_obj, created = get_or_create_state_file(hook, resource, service_item)
+    state_file_obj, created = get_or_create_state_file(hook, resource,
+                                                       service_item)
 
     # Re-extract the plan from git if the hook is wants us to.
     if getattr(hook, "refresh_on_order", False):
@@ -77,23 +87,47 @@ def pre_provision(
             local_path_override=hook.local_path
         )
 
-    #Parse each action input to see if the input includes Django templates and 
-    #render if it does
-    cf_values = resource.get_cf_values_as_dict()
-    resource_dict = resource.__dict__
-    #logger.info(f'action_inputs: {action_inputs}, resource: {resource.id}, type: {type(resource)}')
+    # Parse each action input to see if the input includes Django templates and
+    # render if it does
+    logger.info(f'action_inputs: {action_inputs}, resource: {resource.id}, type: {type(resource)}')
     rendered_inputs = {}
     for key in action_inputs.keys():
-        template = Template(action_inputs[key])
-        context = Context({"resource": resource})
-        rendered_action_input = template.render(context)
-        #logger.info(f'Rendered action_input: {action_inputs[key]} to rendered_action_input: {rendered_action_input}')
+        value = action_inputs[key]
+        if type(value) == str:
+            template = Template(value)
+            context = {
+                "resource": resource,
+                "environment": get_environment_from_job(job),
+                "group": resource.group
+            }
+            context = Context(context)
+            # Hit some instances where strings were rendering with unicode hex
+            # html.unescape fixes this
+            rendered_action_input = html.unescape(template.render(context))
+            if rendered_action_input != value:
+                logger.info(f'Rendered action_input: {value} to '
+                            f'rendered_action_input: {rendered_action_input}')
+            """
+            try:
+                # Doing a literal eval allows us to pass map and lists in to TF
+                logger.debug(f'{key} prior to literal eval: '
+                             f'{rendered_action_input}')
+                rendered_action_input = ast.literal_eval(rendered_action_input)
+                logger.debug(f'rendered type: {type(rendered_action_input)}')
+            except ValueError:
+                # Expected error for strings.
+                logger.debug(f"Value for {key} unable to be parsed")
+            """
+        else:
+            rendered_action_input = value
         rendered_inputs[key] = rendered_action_input
 
-    
+    logger.debug(f"Rendered inputs: {rendered_inputs}")
+
     # Set the action inputs and Terraform variables.
     _ = resource.set_terraform_vars(state_file_obj.id, rendered_inputs)
-    tf_env_vars: tf_env_vars_type = resource.get_terraform_vars(state_file_obj.id)
+    tf_env_vars: tf_env_vars_type = resource.get_terraform_vars(
+        state_file_obj.id)
 
     # The `.tfplan` file we will store our plan in.
     # This is stored temporarily while we plan and then apply.
@@ -116,7 +150,8 @@ def pre_provision(
 
 
 def get_or_create_state_file(
-    hook: TerraformPlanHook, resource: Resource, service_item: TerraformServiceItemType,
+        hook: TerraformPlanHook, resource: Resource,
+        service_item: TerraformServiceItemType,
 ) -> Tuple[TerraformStateFile, bool]:
     """
     Gets unique state files by querying by resource and service item and updates
@@ -135,9 +170,22 @@ def get_or_create_state_file(
     if created:
         # Then create a new, empty module_file
         new_filename = state_file.build_filename()
-        state_file.module_file.save(new_filename, ContentFile(""))  # empty content
-        logger.info(f"Created a new empty state file {state_file.module_file.name}.")
+        state_file.module_file.save(new_filename,
+                                    ContentFile(""))  # empty content
+        logger.info(
+            f"Created a new empty state file {state_file.module_file.name}.")
     else:
-        logger.info(f"Got an existing state file {state_file.module_file.name}.")
+        logger.info(
+            f"Got an existing state file {state_file.module_file.name}.")
 
     return state_file, created
+
+
+def get_environment_from_job(job):
+    params = json.loads(job.order_item._encrypted_arguments)["context"]
+    bpoi_id = params["blueprint_order_item"]
+    service_item_id = params["service_item_id"]
+    bpoi = BlueprintOrderItem.objects.get(id=bpoi_id)
+    bpia = bpoi.blueprintitemarguments_set.get(service_item__id=service_item_id)
+    env = bpia.environment
+    return env
