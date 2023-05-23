@@ -16,21 +16,42 @@ provider "aws" {
 
 resource "aws_s3_bucket" "b1" {
   bucket = var.bucket_name
-
   tags = {
     Owner       = var.owner
     Group       = var.group
   }
 }
 
-resource "aws_s3_bucket_policy" "policy" {
+resource "aws_s3_bucket_public_access_block" "b1" {
   bucket = aws_s3_bucket.b1.id
-  policy = templatefile("resources/policy.json", { bucket = var.bucket_name })
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_acl" "bucket_acl" {
+resource "aws_s3_bucket_ownership_controls" "b1" {
+  bucket = aws_s3_bucket.b1.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "b1" {
+  depends_on = [
+	aws_s3_bucket_public_access_block.b1,
+	aws_s3_bucket_ownership_controls.b1,
+  ]
+
   bucket = aws_s3_bucket.b1.id
   acl    = "public-read"
+}
+
+resource "aws_s3_bucket_policy" "policy" {
+  depends_on = [ aws_s3_bucket_acl.b1 ]
+  bucket = aws_s3_bucket.b1.id
+  policy = templatefile("resources/policy.json", { bucket = var.bucket_name })
 }
 
 resource "aws_s3_bucket_website_configuration" "website" {
