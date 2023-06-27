@@ -19,6 +19,8 @@ resource "aws_s3_bucket" "b1" {
   tags = {
     Owner       = var.owner
     Group       = var.group
+    Tag1        = var.map_test["tag1"]
+    Tag2        = var.map_test["tag2"]
   }
 }
 
